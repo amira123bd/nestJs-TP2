@@ -1,12 +1,25 @@
-import {  IsNotEmpty,  IsString } from 'class-validator';
+import {  IsNotEmpty,  IsOptional,  IsString,MinLength,MaxLength } from 'class-validator';
 import { todoStatusEnum } from "../todoStatusEnum.enum";
 
-export class Updatetodo{
+export class UpdatetodoDto{
+    @IsOptional()
     @IsString()
-    @IsNotEmpty()
-    name:String;
+    @MinLength(3,{
+        message:'the length of the name has to be more than 3 chars'
+    })
+    @MaxLength(10,
+        {
+        message:'the length of the name has to be less than 10 chars'
+
+        })
+    name:string;
+
+    @IsOptional()
     @IsString()
-    @IsNotEmpty()
+    @MinLength(10,{
+        message:'the length of the description has to be more than 10 chars'
+ 
+    })
     description:string;
     
     status:todoStatusEnum;

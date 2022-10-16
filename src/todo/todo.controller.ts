@@ -1,64 +1,139 @@
-import { Controller,Get,Post,Delete,Put,Patch,Param,Body  } from '@nestjs/common';
+import { Controller,Get,Post,Delete,Put,Patch,Param,Body, Version, ParseIntPipe  } from '@nestjs/common';
 import { todoModel } from './todo.model';
-import { Updatetodo } from './DTO/updatetodo.dto';
+import { UpdatetodoDto } from './DTO/updatetodo.dto';
 import { AddTodoDto } from './DTO/add-todo.dto';
-
-
+import {TodoService}  from  './todo.service'
+import { Todo } from './Entity/todo.entity';
+import { todoStatusEnum } from "./todoStatusEnum.enum";
 
 @Controller('todo')
 export class TodoController {
-    private todos =[];
 
-    //get the todo list
-    @Get()
-    getTodos(){
-        
-        return this.todos;
+    constructor(
+        private TodoService: TodoService
+    ){
+
     }
 
 
+    private todos =[];
 
-    //ADD a todo
+  
+
+   
+
+   // @Version('2')
     @Post()
-    Ajoutetodo(@Body() AddTodoDto:AddTodoDto ){
+    async AddTodo(
+        @Body() addTodoDto: AddTodoDto
+    ):Promise<Todo>{
+        return await  this.TodoService.addTodo(addTodoDto);
+    }
+
+ 
+    @Patch(':id')
+    async updateTodo(
+        @Body() updatetodoDto:UpdatetodoDto,
+        @Param('id',ParseIntPipe) id:number):Promise<Todo>
+        {
+            return await this.TodoService.updateTodo(id,updatetodoDto);
+        }
+    //delete
+   /* @Delete(':id')
+        async deletetodo(@Param('id',ParseIntPipe) id:number){
+            return this.TodoService.deleteTodo(id);
+        }*/
+    
+   
+    //count by status
+    @Get('count')
+    async nombretodobystatus(){
+        return await this.TodoService.todoByStatus();
+    }
+
+     
+    
+     //@Version('1')
+     //find by status
+    @Get(':status')
+    getBystatus(@Param('status')status:todoStatusEnum ){
+        return this.TodoService.getTodoByCriteria(status);
+    }
+     //get all the todos
+     @Get('recupere')
+     async getTodo():Promise<Todo[]>{
+            return  await this.TodoService.getTodo();
+     } 
+
+     //get todo by id
+     @Get(':id')
+     findOne(@Param('id', ParseIntPipe) id: number) {
+     
+     return this.TodoService.getTodobyId(id);
+  }
+
+  
+      //softdelete
+    @Delete(':id')
+    async deletetodo(@Param('id',ParseIntPipe) id:number){
+        return this.TodoService.softDelete(id);
+    }
+    //restaurer le todo avec son id 
+    @Get('restore/:id')
+    async restoretodo(@Param('id',ParseIntPipe)id:number){
+        return await this.TodoService.restoretodo(id);
+    }
+     //@Version('2')
+    /*@Get()
+    getTodos2(){
+        
+        return this.todos;
+    }*/
+
+
+
+   
+  //  @Version('1')
+   /*@Post()
+    AdTodo(@Body() AddTodoDto:AddTodoDto ){
         const todo= new todoModel()
         todo.name=AddTodoDto.name;
         todo.description=AddTodoDto.description;
         this.todos.push(todo)
         return todo;
-    }
+    }*/
 
 
 
     //find to do by id
-    @Get('/:id')
+    /*@Get('/:id')
     gettodobyid(@Param('id') id)
     {
         return this.todos.find((todoitem)=>todoitem.id==id)
     }
-
+*/
 
     // delete by id
-   @Delete (':id')
+   /*@Delete (':id')
    deletetodobyid(@Param('id') id)
    {
   this.todos=this.todos.filter(thistodo=>thistodo.id !== id)
    return 'todo item deleted'
-   }
+   }*/
 
 
   // update 
-   @Put(':id')
-    update(@Param('id') id : number ,@Body ('todo') todoupdate: Updatetodo)
+   /*@Put(':id')
+    update(@Param('id') id : number ,@Body ('todo') todoupdate: UpdatetodoDto)
     {
         const TODO= this.todos.find((todoitem)=>todoitem.id==id);
         if(TODO){
-            Object.assign(Updatetodo,TODO);
+            Object.assign(UpdatetodoDto,TODO);
             this.todos.push(TODO);
         }
         return this.todos;
 
-    }
+    }*/
 
  
 

@@ -6,10 +6,10 @@ import {todoStatusEnum} from './todoStatusEnum.enum'
 export class todoModel{
     constructor(
         public id=uuidv4(),
-        public name:string ='',
-        public description :string ='',
+        public name:string='',
+        public description :string='',
         public creationDate=new Date(),
-        public status :todoStatusEnum=todoStatusEnum.waiting,
+        public status :todoStatusEnum=todoStatusEnum.waiting
     ){
     
     }
